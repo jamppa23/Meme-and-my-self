@@ -1,0 +1,65 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {}
+}import sqlite3
+from datetime import datetime
+
+def populate_database(db_name="sports_betting.db"):
+    """
+    Populates the sports betting database with sample data.
+
+    Args:
+        db_name (str): The name of the database file.
+    """
+
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+
+    # Insert Sports
+    sports = [("Football",), ("Basketball",), ("Tennis",)]
+    cursor.executemany("INSERT OR IGNORE INTO Sports (sport_name) VALUES (?)", sports)
+
+    # Insert Leagues
+    leagues = [
+        ("Premier League", 1),  # Football
+        ("La Liga", 1),         # Football
+        ("NBA", 2),             # Basketball
+        ("Wimbledon", 3),       # Tennis
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO Leagues (league_name, sport_id) VALUES (?, ?)", leagues)
+
+    # Insert Teams
+    teams = [
+        ("Manchester United", 1),  # Premier League
+        ("Liverpool", 1),         # Premier League
+        ("Real Madrid", 2),        # La Liga
+        ("Barcelona", 2),        # La Liga
+        ("Los Angeles Lakers", 3), # NBA
+        ("Golden State Warriors", 3), # NBA
+        ("Roger Federer", 4),     # Wimbledon
+        ("Rafael Nadal", 4),      # Wimbledon
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO Teams (team_name, league_id) VALUES (?, ?)", teams)
+
+    # Insert Events
+    events = [
+        (1, 2, datetime(2023, 11, 25, 15, 0, 0), 1),  # Man Utd vs Liverpool (Premier League)
+        (3, 4, datetime(2023, 11, 26, 16, 0, 0), 2),  # Real Madrid vs Barcelona (La Liga)
+        (5, 6, datetime(2023, 11, 27, 19, 30, 0), 3), # Lakers vs Warriors (NBA)
+        (7, 8, datetime(2023, 12, 1, 12, 0, 0), 4),  # Federer vs Nadal (Wimbledon)
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO Events (home_team_id, away_team_id, event_date, league_id) VALUES (?, ?, ?, ?)", events)
+
+    # Insert Users (Optional)
+    users = [
+        ("user1", 100.0),
+        ("user2", 50.0),
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO Users (username, balance) VALUES (?, ?)", users)
+
+    conn.commit()
+    conn.close()
+
+if __name__ == "__main__":
+    populate_database()
+    print("Database populated with sample data.")
